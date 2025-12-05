@@ -5,12 +5,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.triviaapp.data.DefaultQuestionRepository
+import com.example.triviaapp.ui.GameOverScreen
+import com.example.triviaapp.ui.QuestionScreen
+import com.example.triviaapp.ui.QuestionViewModel
+import com.example.triviaapp.ui.QuestionViewModelFactory
 import com.example.triviaapp.ui.theme.TriviaAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,11 +25,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TriviaAppTheme {
+                val repository = DefaultQuestionRepository()
+                val viewModel: QuestionViewModel = viewModel(
+                    factory = QuestionViewModelFactory(repository)
+                )
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Navigation(viewModel)
                 }
             }
         }
@@ -31,17 +39,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TriviaAppTheme {
-        Greeting("Android")
+private fun Navigation(viewModel: QuestionViewModel) {
+    val navController = rememberNavController()
+    NavHost(navController, startDestination = "quiz") {
+        composable("quiz") { QuestionScreen(viewModel = viewModel, navController = navController) }
+        composable("gameover") { GameOverScreen(viewModel = viewModel, navController = navController) }
     }
 }
