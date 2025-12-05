@@ -38,7 +38,7 @@ fun GameOverScreen(viewModel: QuestionViewModel, navController: NavController) {
         Button(onClick = {
             viewModel.resetGame()
             navController.navigate("quiz") {
-                popUpTo("quiz") { inclusive = true }
+                popUpTo("gameover") { inclusive = true }
             }
         }) {
             Text("Play again")
