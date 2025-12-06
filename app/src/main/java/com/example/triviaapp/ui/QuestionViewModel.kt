@@ -3,15 +3,29 @@ package com.example.triviaapp.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.example.triviaapp.domain.Difficulty
 import com.example.triviaapp.domain.Question
+import com.example.triviaapp.domain.QuestionRepository
 import com.example.triviaapp.domain.QuestionType
+import com.example.triviaapp.domain.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class QuestionViewModel(private val repository: QuestionRepository) : ViewModel() {
+class QuestionViewModel(
+    private val questionRepository: QuestionRepository,
+    settingsRepository: SettingsRepository
+) : ViewModel() {
+
+    val difficulty = settingsRepository.getDifficulty()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = Difficulty.ANY
+        )
+
     private val _currentQuestion = MutableStateFlow(
         Question(
             type = QuestionType.MULTIPLE,
@@ -39,8 +53,9 @@ class QuestionViewModel(private val repository: QuestionRepository) : ViewModel(
 
     fun getNextQuestion() {
         viewModelScope.launch {
+            val currentDifficulty = difficulty.value
             try {
-                val q = repository.getQuestion()
+                val q = questionRepository.getQuestion(currentDifficulty)
                 _currentQuestion.value = q
             } catch (t: Throwable) {
                 Log.e("QuestionViewModel", "QuestionViewModel error: ${t.message}")

@@ -31,6 +31,7 @@ fun QuestionScreen(viewModel: QuestionViewModel, navController: NavController) {
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         Text("Question #${score + 1}", style = MaterialTheme.typography.titleLarge)
+        Text("Difficulty: ${viewModel.difficulty.collectAsState().value.label()}", style = MaterialTheme.typography.bodyLarge)
         Text(questionState.question, style = MaterialTheme.typography.titleLarge)
 
         val options = questionState.incorrectAnswers.plus(questionState.correctAnswer).shuffled()

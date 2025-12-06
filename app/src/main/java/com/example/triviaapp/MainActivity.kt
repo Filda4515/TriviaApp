@@ -13,10 +13,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.triviaapp.data.DefaultQuestionRepository
+import com.example.triviaapp.data.DefaultSettingsRepository
 import com.example.triviaapp.ui.GameOverScreen
 import com.example.triviaapp.ui.QuestionScreen
 import com.example.triviaapp.ui.QuestionViewModel
 import com.example.triviaapp.ui.QuestionViewModelFactory
+import com.example.triviaapp.ui.SettingsScreen
+import com.example.triviaapp.ui.SettingsViewModel
+import com.example.triviaapp.ui.SettingsViewModelFactory
 import com.example.triviaapp.ui.theme.TriviaAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,13 +29,19 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TriviaAppTheme {
-                val repository = DefaultQuestionRepository()
-                val viewModel: QuestionViewModel = viewModel(
-                    factory = QuestionViewModelFactory(repository)
+                val questionRepository = DefaultQuestionRepository()
+                val settingsRepository = DefaultSettingsRepository(this)
+
+                val questionViewModel: QuestionViewModel = viewModel(
+                    factory = QuestionViewModelFactory(questionRepository, settingsRepository)
+                )
+
+                val settingsViewModel: SettingsViewModel = viewModel(
+                    factory = SettingsViewModelFactory(settingsRepository)
                 )
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Navigation(viewModel)
+                    Navigation(questionViewModel, settingsViewModel)
                 }
             }
         }
@@ -39,10 +49,17 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun Navigation(viewModel: QuestionViewModel) {
+private fun Navigation(questionViewModel: QuestionViewModel, settingsViewModel: SettingsViewModel) {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = "quiz") {
-        composable("quiz") { QuestionScreen(viewModel = viewModel, navController = navController) }
-        composable("gameover") { GameOverScreen(viewModel = viewModel, navController = navController) }
+    NavHost(navController, startDestination = "settings") {
+        composable("settings") {
+            SettingsScreen(viewModel = settingsViewModel, navController = navController)
+        }
+        composable("quiz") {
+            QuestionScreen(viewModel = questionViewModel, navController = navController)
+        }
+        composable("gameover") {
+            GameOverScreen(viewModel = questionViewModel, navController = navController)
+        }
     }
 }

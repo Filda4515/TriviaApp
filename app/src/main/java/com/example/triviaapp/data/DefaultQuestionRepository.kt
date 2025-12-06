@@ -5,8 +5,7 @@ import com.example.triviaapp.data.remote.QuestionRemoteDataSource
 import com.example.triviaapp.domain.Difficulty
 import com.example.triviaapp.domain.Question
 import com.example.triviaapp.domain.QuestionType
-import com.example.triviaapp.ui.QuestionRepository
-
+import com.example.triviaapp.domain.QuestionRepository
 
 class DefaultQuestionRepository(
     private val questionRemoteDataSource: QuestionRemoteDataSource = QuestionRemoteDataSource()
@@ -21,9 +20,9 @@ class DefaultQuestionRepository(
         incorrectAnswers = listOf("Xbox Game Studios", "Riot", "Warhorse Studios")
     )
 
-    override suspend fun getQuestion(): Question {
+    override suspend fun getQuestion(difficulty: Difficulty): Question {
         return try {
-            val dto = questionRemoteDataSource.getQuestion()
+            val dto = questionRemoteDataSource.getQuestion(difficulty.apiParam())
             return dto.toDomain()
         } catch (e: Exception) {
             fallbackQuestion

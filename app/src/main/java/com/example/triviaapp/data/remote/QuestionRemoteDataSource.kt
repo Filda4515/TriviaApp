@@ -9,12 +9,17 @@ import kotlinx.serialization.json.Json
 class QuestionRemoteDataSource {
     private val json = Json { ignoreUnknownKeys = true }
 
-    suspend fun getQuestion(): QuestionApiDto {
+    suspend fun getQuestion(difficulty: String?): QuestionApiDto {
         return withContext(Dispatchers.IO) {
             try {
-                val url =
-                    "https://opentdb.com/api.php?amount=1&category=15&difficulty=easy&type=multiple"
-                val response = URL(url).readText()
+                val url = StringBuilder("https://opentdb.com/api.php?")
+                url.append("amount=1")
+                url.append("&category=15")
+                if (difficulty != null)
+                    url.append("&difficulty=$difficulty")
+                url.append("&type=multiple")
+
+                val response = URL(url.toString()).readText()
                 val apiResponse = json.decodeFromString<QuestionApiResponse>(response)
                 when (apiResponse.response_code) {
                     0 -> apiResponse.results.first()
