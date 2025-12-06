@@ -1,5 +1,6 @@
 package com.example.triviaapp.data
 
+import android.util.Log
 import com.example.triviaapp.data.mappers.toDomain
 import com.example.triviaapp.data.remote.QuestionRemoteDataSource
 import com.example.triviaapp.domain.Difficulty
@@ -21,12 +22,16 @@ class DefaultQuestionRepository(
         incorrectAnswers = listOf("Xbox Game Studios", "Riot", "Warhorse Studios")
     )
 
-    override suspend fun getQuestion(settings: Settings): Question {
-        return try {
-            val dto = questionRemoteDataSource.getQuestion(settings)
-            return dto.toDomain()
-        } catch (e: Exception) {
-            fallbackQuestion
+    override suspend fun getQuestions(settings: Settings, amount: Int): List<Question> {
+        val dtoList = questionRemoteDataSource.getQuestions(settings, amount)
+        val domain = dtoList.mapNotNull { dto ->
+            try {
+                dto.toDomain()
+            } catch (e: Exception) {
+                Log.e("DefaultQuestionRepository", "Error: ${e.message}")
+                null
+            }
         }
+        return domain.ifEmpty { listOf(fallbackQuestion) }
     }
 }

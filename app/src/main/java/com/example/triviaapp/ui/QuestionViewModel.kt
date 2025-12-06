@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class QuestionViewModel(
     private val questionRepository: QuestionRepository,
-    settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     val settings: StateFlow<Settings> = settingsRepository.getSettings()
@@ -46,22 +46,48 @@ class QuestionViewModel(
     private val _highScore = MutableStateFlow(0)
     val highScore = _highScore.asStateFlow()
 
+    private val questionQueue = ArrayDeque<Question>()
+    private var isFetching = false
+
     fun getOptions(q: Question): List<String> =
         if (q.type == QuestionType.BOOLEAN)
             (q.incorrectAnswers + q.correctAnswer).sortedDescending()
         else
             (q.incorrectAnswers + q.correctAnswer).shuffled()
 
-    fun getNextQuestion() {
+    fun getNextQuestion(passedSettings: Settings? = null) {
         viewModelScope.launch {
-            try {
-                val currentSettings = settings.value
-                val q = questionRepository.getQuestion(currentSettings)
-                _currentQuestion.value = q
-            } catch (t: Throwable) {
-                Log.e("QuestionViewModel", "QuestionViewModel error: ${t.message}")
-                throw t
+            if (passedSettings != null) {
+                questionQueue.clear()
+                getQuestionsIfNeeded(5, passedSettings)
+            } else if (questionQueue.size <= 1) {
+                getQuestionsIfNeeded(5)
             }
+
+            getNextQuestionFromQueue()
+        }
+    }
+
+    private fun getNextQuestionFromQueue() {
+        if (questionQueue.isNotEmpty()) {
+            _currentQuestion.value = questionQueue.removeFirst()
+        } else {
+            Log.e("QuestionViewModel", "Empty queue")
+        }
+    }
+
+    private suspend fun getQuestionsIfNeeded(amount: Int, passedSettings: Settings? = null) {
+        if (isFetching) return
+        if (questionQueue.isNotEmpty()) return
+        isFetching = true
+        try {
+            val currentSettings = passedSettings ?: settings.value
+            val list = questionRepository.getQuestions(currentSettings, amount)
+            questionQueue.addAll(list)
+        } catch (e: Exception) {
+            Log.e("QuestionViewModel", "Error: ${e.message}")
+        } finally {
+            isFetching = false
         }
     }
 

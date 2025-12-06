@@ -1,5 +1,5 @@
 package com.example.triviaapp.domain
 
 interface QuestionRepository {
-    suspend fun getQuestion(settings: Settings): Question
+    suspend fun getQuestions(settings: Settings, amount: Int): List<Question>
 }
