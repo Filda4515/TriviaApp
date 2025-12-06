@@ -46,8 +46,11 @@ class QuestionViewModel(
     private val _highScore = MutableStateFlow(0)
     val highScore = _highScore.asStateFlow()
 
-    private fun getOptions(q: Question): List<String> =
-        (q.incorrectAnswers + q.correctAnswer).shuffled()
+    fun getOptions(q: Question): List<String> =
+        if (q.type == QuestionType.BOOLEAN)
+            (q.incorrectAnswers + q.correctAnswer).sortedDescending()
+        else
+            (q.incorrectAnswers + q.correctAnswer).shuffled()
 
     fun getNextQuestion() {
         viewModelScope.launch {

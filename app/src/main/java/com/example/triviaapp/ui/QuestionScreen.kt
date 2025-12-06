@@ -31,7 +31,7 @@ import androidx.navigation.NavController
 @Composable
 fun QuestionScreen(viewModel: QuestionViewModel, navController: NavController) {
     val score by viewModel.score.collectAsState()
-    val questionState by viewModel.currentQuestion.collectAsState()
+    val question by viewModel.currentQuestion.collectAsState()
     val settings by viewModel.settings.collectAsState()
 
     Column(
@@ -63,10 +63,9 @@ fun QuestionScreen(viewModel: QuestionViewModel, navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(questionState.question, style = MaterialTheme.typography.titleLarge)
+                Text(question.question, style = MaterialTheme.typography.titleLarge)
 
-                val options =
-                    questionState.incorrectAnswers.plus(questionState.correctAnswer).shuffled()
+                val options = viewModel.getOptions(question)
                 options.forEach { option ->
                     Button(
                         onClick = {
