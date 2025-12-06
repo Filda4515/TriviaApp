@@ -46,14 +46,6 @@ class QuestionViewModel(
     private val _highScore = MutableStateFlow(0)
     val highScore = _highScore.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            settings.collect {
-                getNextQuestion()
-            }
-        }
-    }
-
     private fun getOptions(q: Question): List<String> =
         (q.incorrectAnswers + q.correctAnswer).shuffled()
 
@@ -81,7 +73,10 @@ class QuestionViewModel(
             getNextQuestion()
             return true
         } else {
-            Log.d("QuestionViewModel","Wrong answer: $answer (expected '$correct'). Game over with score ${_score.value}")
+            Log.d(
+                "QuestionViewModel",
+                "Wrong answer: $answer (expected '$correct'). Game over with score ${_score.value}"
+            )
             return false
         }
     }

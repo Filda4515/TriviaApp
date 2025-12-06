@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +53,13 @@ fun GameOverScreen(viewModel: QuestionViewModel, navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text("Score: $score", style = MaterialTheme.typography.titleMedium)
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                )
+
                 Text("Highscore: $highScore", style = MaterialTheme.typography.titleMedium)
             }
         }

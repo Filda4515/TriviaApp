@@ -15,5 +15,5 @@ data class QuestionApiDto(
 @Serializable
 data class QuestionApiResponse(
     val response_code: Int,
-    val results: List<QuestionApiDto>
+    val results: List<QuestionApiDto> = emptyList()
 )

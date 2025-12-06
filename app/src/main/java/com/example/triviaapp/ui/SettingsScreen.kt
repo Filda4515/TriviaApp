@@ -2,7 +2,6 @@ package com.example.triviaapp.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -34,8 +32,12 @@ import com.example.triviaapp.domain.QuestionType
 import com.google.accompanist.flowlayout.FlowRow
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel, navController: NavController) {
-    val settings by viewModel.settings.collectAsState()
+fun SettingsScreen(
+    settingsViewModel: SettingsViewModel,
+    questionViewModel: QuestionViewModel,
+    navController: NavController
+) {
+    val settings by settingsViewModel.settings.collectAsState()
 
     Column(
         modifier = Modifier
@@ -52,14 +54,14 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavController) {
             options = Difficulty.entries,
             selected = settings.difficulty,
             onSelectionChanged = { newDifficulty ->
-                viewModel.setDifficulty(newDifficulty)
+                settingsViewModel.setDifficulty(newDifficulty)
             }
         )
 
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 4.dp),
             thickness = 1.dp,
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
         )
 
         SettingsSection(
@@ -67,7 +69,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavController) {
             options = QuestionType.entries,
             selected = settings.questionType,
             onSelectionChanged = { newType ->
-                viewModel.setType(newType)
+                settingsViewModel.setType(newType)
             }
         )
 
@@ -75,6 +77,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavController) {
 
         Button(
             onClick = {
+                questionViewModel.getNextQuestion()
                 navController.navigate("quiz") {
                     popUpTo("settings") { inclusive = true }
                 }

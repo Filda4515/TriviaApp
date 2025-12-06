@@ -8,12 +8,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 import kotlinx.serialization.json.Json
+import java.net.HttpURLConnection
 
 class QuestionRemoteDataSource {
     private val json = Json { ignoreUnknownKeys = true }
 
     suspend fun getQuestion(settings: Settings): QuestionApiDto {
         return withContext(Dispatchers.IO) {
+            var connection: HttpURLConnection? = null
             try {
                 val url = StringBuilder("https://opentdb.com/api.php?")
                 url.append("amount=1")
@@ -24,7 +26,16 @@ class QuestionRemoteDataSource {
                     url.append("&type=${settings.questionType.apiParam()}")
                 url.append("&encode=url3986")
 
-                val response = URL(url.toString()).readText()
+                connection = URL(url.toString()).openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 10000
+                connection.readTimeout = 10000
+                val response = if (connection.responseCode >= 400) {
+                    connection.errorStream.bufferedReader().use { it.readText() }
+                } else {
+                    connection.inputStream.bufferedReader().use { it.readText() }
+                }
+
                 val apiResponse = json.decodeFromString<QuestionApiResponse>(response)
                 when (apiResponse.response_code) {
                     0 -> apiResponse.results.first()
@@ -38,6 +49,8 @@ class QuestionRemoteDataSource {
             } catch (e: Exception) {
                 Log.e("API", "Error: $e")
                 throw e
+            } finally {
+                connection?.disconnect()
             }
         }
     }

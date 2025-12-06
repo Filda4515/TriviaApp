@@ -53,7 +53,11 @@ private fun Navigation(questionViewModel: QuestionViewModel, settingsViewModel: 
     val navController = rememberNavController()
     NavHost(navController, startDestination = "settings") {
         composable("settings") {
-            SettingsScreen(viewModel = settingsViewModel, navController = navController)
+            SettingsScreen(
+                questionViewModel = questionViewModel,
+                settingsViewModel = settingsViewModel,
+                navController = navController
+            )
         }
         composable("quiz") {
             QuestionScreen(viewModel = questionViewModel, navController = navController)
