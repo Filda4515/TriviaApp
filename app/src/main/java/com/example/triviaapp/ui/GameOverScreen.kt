@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,8 +36,25 @@ fun GameOverScreen(viewModel: QuestionViewModel, navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Game Over!", style = MaterialTheme.typography.titleLarge)
-        Text("Score: $score", style = MaterialTheme.typography.titleMedium)
-        Text("Highscore: $highScore", style = MaterialTheme.typography.titleMedium)
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Score: $score", style = MaterialTheme.typography.titleMedium)
+                Text("Highscore: $highScore", style = MaterialTheme.typography.titleMedium)
+            }
+        }
 
         Row(
             modifier = Modifier

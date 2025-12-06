@@ -37,13 +37,14 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavController) {
             .fillMaxSize()
             .padding(WindowInsets.statusBars.asPaddingValues())
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Settings", style = MaterialTheme.typography.titleLarge)
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
             )
