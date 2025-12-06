@@ -18,6 +18,7 @@ class QuestionRemoteDataSource {
                 if (difficulty != null)
                     url.append("&difficulty=$difficulty")
                 url.append("&type=multiple")
+                url.append("&encode=url3986")
 
                 val response = URL(url.toString()).readText()
                 val apiResponse = json.decodeFromString<QuestionApiResponse>(response)
