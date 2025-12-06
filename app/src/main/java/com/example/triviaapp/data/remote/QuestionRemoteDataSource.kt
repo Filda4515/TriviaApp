@@ -1,6 +1,9 @@
 package com.example.triviaapp.data.remote
 
 import android.util.Log
+import com.example.triviaapp.domain.Difficulty
+import com.example.triviaapp.domain.QuestionType
+import com.example.triviaapp.domain.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -9,15 +12,16 @@ import kotlinx.serialization.json.Json
 class QuestionRemoteDataSource {
     private val json = Json { ignoreUnknownKeys = true }
 
-    suspend fun getQuestion(difficulty: String?): QuestionApiDto {
+    suspend fun getQuestion(settings: Settings): QuestionApiDto {
         return withContext(Dispatchers.IO) {
             try {
                 val url = StringBuilder("https://opentdb.com/api.php?")
                 url.append("amount=1")
                 url.append("&category=15")
-                if (difficulty != null)
-                    url.append("&difficulty=$difficulty")
-                url.append("&type=multiple")
+                if (settings.difficulty != Difficulty.ANY)
+                    url.append("&difficulty=${settings.difficulty.apiParam()}")
+                if (settings.questionType != QuestionType.ANY)
+                    url.append("&type=${settings.questionType.apiParam()}")
                 url.append("&encode=url3986")
 
                 val response = URL(url.toString()).readText()

@@ -1,6 +1,8 @@
 package com.example.triviaapp.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,6 +28,7 @@ import androidx.navigation.NavController
 fun QuestionScreen(viewModel: QuestionViewModel, navController: NavController) {
     val score by viewModel.score.collectAsState()
     val questionState by viewModel.currentQuestion.collectAsState()
+    val settings by viewModel.settings.collectAsState()
 
     Column(
         modifier = Modifier
@@ -39,10 +43,6 @@ fun QuestionScreen(viewModel: QuestionViewModel, navController: NavController) {
             modifier = Modifier.align(
                 Alignment.CenterHorizontally
             )
-        )
-        Text(
-            "Difficulty: ${viewModel.difficulty.collectAsState().value.label()}",
-            style = MaterialTheme.typography.bodyLarge
         )
 
         Card(
@@ -78,6 +78,33 @@ fun QuestionScreen(viewModel: QuestionViewModel, navController: NavController) {
                         Text(option)
                     }
                 }
+            }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 16.dp, end = 16.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = RoundedCornerShape(20.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Difficulty: ${settings.difficulty.label()}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Type: ${settings.questionType.label()}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }

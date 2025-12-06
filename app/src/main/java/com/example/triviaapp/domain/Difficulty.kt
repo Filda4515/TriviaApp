@@ -1,9 +1,9 @@
 package com.example.triviaapp.domain
 
-enum class Difficulty {
+enum class Difficulty : HasLabel {
     ANY, EASY, MEDIUM, HARD;
 
-    fun label(): String = when (this) {
+    override fun label(): String = when (this) {
         ANY -> "Any Difficulty"
         EASY -> "Easy"
         MEDIUM -> "Medium"

@@ -45,6 +45,7 @@ android {
 dependencies {
     implementation("androidx.datastore:datastore-preferences:1.2.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.28.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

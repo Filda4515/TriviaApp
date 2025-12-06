@@ -7,9 +7,11 @@ import com.example.triviaapp.domain.Difficulty
 import com.example.triviaapp.domain.Question
 import com.example.triviaapp.domain.QuestionRepository
 import com.example.triviaapp.domain.QuestionType
+import com.example.triviaapp.domain.Settings
 import com.example.triviaapp.domain.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -19,18 +21,18 @@ class QuestionViewModel(
     settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val difficulty = settingsRepository.getDifficulty()
+    val settings: StateFlow<Settings> = settingsRepository.getSettings()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = Difficulty.ANY
+            initialValue = Settings.DEFAULT
         )
 
     private val _currentQuestion = MutableStateFlow(
         Question(
             type = QuestionType.MULTIPLE,
             difficulty = Difficulty.EASY,
-            category = "Games",
+            category = "",
             question = "Loading...",
             correctAnswer = "",
             incorrectAnswers = emptyList()
@@ -45,7 +47,11 @@ class QuestionViewModel(
     val highScore = _highScore.asStateFlow()
 
     init {
-        getNextQuestion()
+        viewModelScope.launch {
+            settings.collect {
+                getNextQuestion()
+            }
+        }
     }
 
     private fun getOptions(q: Question): List<String> =
@@ -53,9 +59,9 @@ class QuestionViewModel(
 
     fun getNextQuestion() {
         viewModelScope.launch {
-            val currentDifficulty = difficulty.value
             try {
-                val q = questionRepository.getQuestion(currentDifficulty)
+                val currentSettings = settings.value
+                val q = questionRepository.getQuestion(currentSettings)
                 _currentQuestion.value = q
             } catch (t: Throwable) {
                 Log.e("QuestionViewModel", "QuestionViewModel error: ${t.message}")
