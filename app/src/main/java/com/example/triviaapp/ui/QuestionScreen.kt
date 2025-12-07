@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -36,7 +36,7 @@ fun QuestionScreen(viewModel: QuestionViewModel, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(WindowInsets.statusBars.asPaddingValues())
+            .padding(WindowInsets.safeDrawing.asPaddingValues())
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
@@ -82,55 +82,55 @@ fun QuestionScreen(viewModel: QuestionViewModel, navController: NavController) {
                 }
             }
         }
-    }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 16.dp, end = 16.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(20.dp)
-                )
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .width(IntrinsicSize.Max),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+        Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 16.dp, end = 16.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(20.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .width(IntrinsicSize.Max),
             ) {
-                Text(
-                    text = "Difficulty: ${settings.difficulty.label()}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Difficulty: ${settings.difficulty.label()}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
 
-                HorizontalDivider(
-                    modifier = Modifier
-                        .padding(vertical = 2.dp)
-                        .fillMaxWidth(),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                )
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .padding(vertical = 2.dp)
+                            .fillMaxWidth(),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    )
 
-                Text(
-                    text = "Type: ${settings.questionType.label()}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                    Text(
+                        text = "Type: ${settings.questionType.label()}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
 
-                HorizontalDivider(
-                    modifier = Modifier
-                        .padding(vertical = 2.dp)
-                        .fillMaxWidth(),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                )
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .padding(vertical = 2.dp)
+                            .fillMaxWidth(),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    )
 
-                Text(
-                    text = "Category: ${settings.category.name}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                    Text(
+                        text = "Category: ${settings.category.name}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }

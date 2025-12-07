@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -61,76 +64,85 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(WindowInsets.statusBars.asPaddingValues())
+            .padding(WindowInsets.safeDrawing.asPaddingValues())
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Settings", style = MaterialTheme.typography.titleLarge)
 
-        SettingsSection(
-            title = "Select Difficulty:",
-            options = Difficulty.entries,
-            selected = settings.difficulty,
-            onSelectionChanged = { newDifficulty ->
-                settingsViewModel.setDifficulty(newDifficulty)
-            }
-        )
+        Spacer(modifier = Modifier.height(20.dp))
 
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 4.dp),
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-        )
-
-        SettingsSection(
-            title = "Select Type:",
-            options = QuestionType.entries,
-            selected = settings.questionType,
-            onSelectionChanged = { newType ->
-                settingsViewModel.setType(newType)
-            }
-        )
-
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 4.dp),
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-        )
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "Select Category:",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(bottom = 16.dp)
+            SettingsSection(
+                title = "Select Difficulty:",
+                options = Difficulty.entries,
+                selected = settings.difficulty,
+                onSelectionChanged = { newDifficulty ->
+                    settingsViewModel.setDifficulty(newDifficulty)
+                }
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 4.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+            )
+
+            SettingsSection(
+                title = "Select Type:",
+                options = QuestionType.entries,
+                selected = settings.questionType,
+                onSelectionChanged = { newType ->
+                    settingsViewModel.setType(newType)
+                }
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 4.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
                 )
-
-                if (categories.isEmpty()) {
-                    Text("Loading categories...", style = MaterialTheme.typography.bodyMedium)
-                } else {
-                    val allCategories = listOf(Category.DEFAULT) + categories
-
-                    CategoryDropdown(
-                        categories = allCategories,
-                        selectedCategory = settings.category,
-                        onCategorySelected = { category ->
-                            settingsViewModel.setCategory(category)
-                        }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "Select Category:",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
+
+                    if (categories.isEmpty()) {
+                        Text("Loading categories...", style = MaterialTheme.typography.bodyMedium)
+                    } else {
+                        val allCategories = listOf(Category.DEFAULT) + categories
+
+                        CategoryDropdown(
+                            categories = allCategories,
+                            selectedCategory = settings.category,
+                            onCategorySelected = { category ->
+                                settingsViewModel.setCategory(category)
+                            }
+                        )
+                    }
                 }
             }
         }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -146,11 +158,15 @@ fun SettingsScreen(
             Text("Start Quiz")
         }
 
-        Box(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 16.dp, end = 16.dp)
                     .background(
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(20.dp)
@@ -174,7 +190,6 @@ fun SettingsScreen(
                 onClick = { showConfirmReset = true },
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .padding(16.dp)
             ) {
                 Text("Reset Highscores")
             }
@@ -266,67 +281,69 @@ fun CategoryDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(),
-            readOnly = true,
-            value = selectedCategory.name,
-            onValueChange = {},
-            label = { Text("Category") },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-        )
-
-        ExposedDropdownMenu(
+    Box(modifier = Modifier.height(IntrinsicSize.Min)) {
+        ExposedDropdownMenuBox(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.heightIn(max = 400.dp)
+            onExpandedChange = { expanded = !expanded }
         ) {
-            val groupedCategories = categories.groupBy {
-                if (it.name.contains(":")) it.name.substringBefore(":") else "Other"
-            }
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                readOnly = true,
+                value = selectedCategory.name,
+                onValueChange = {},
+                label = { Text("Category") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+            )
 
-            groupedCategories.forEach { (groupName, groupItems) ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = groupName,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    onClick = {}
-                )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.heightIn(max = 400.dp)
+            ) {
+                val groupedCategories = categories.groupBy {
+                    if (it.name.contains(":")) it.name.substringBefore(":") else "Other"
+                }
 
-                groupItems.forEach { category ->
+                groupedCategories.forEach { (groupName, groupItems) ->
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = category.name,
-                                style = MaterialTheme.typography.bodyMedium
+                                text = groupName,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         },
-                        onClick = {
-                            onCategorySelected(category)
-                            expanded = false
-                        },
+                        onClick = {}
+                    )
+
+                    groupItems.forEach { category ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = category.name,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            },
+                            onClick = {
+                                onCategorySelected(category)
+                                expanded = false
+                            },
+                        )
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth(),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                     )
                 }
-
-                HorizontalDivider(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth(),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                )
             }
         }
     }

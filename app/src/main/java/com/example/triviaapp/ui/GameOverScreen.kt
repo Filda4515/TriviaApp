@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,7 +31,7 @@ fun GameOverScreen(viewModel: QuestionViewModel, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(WindowInsets.statusBars.asPaddingValues())
+            .padding(WindowInsets.safeDrawing.asPaddingValues())
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
