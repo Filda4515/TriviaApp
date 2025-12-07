@@ -23,9 +23,11 @@ import com.example.triviaapp.ui.SettingsScreen
 import com.example.triviaapp.ui.SettingsViewModel
 import com.example.triviaapp.ui.SettingsViewModelFactory
 import com.example.triviaapp.ui.theme.TriviaAppTheme
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {

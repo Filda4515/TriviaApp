@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.TriviaApp" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.TriviaApp.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splashscreen</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/splash_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.TriviaApp</item>
+    </style>
 </resources>
