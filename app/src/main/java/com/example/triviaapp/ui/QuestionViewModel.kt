@@ -4,21 +4,26 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.triviaapp.domain.Difficulty
+import com.example.triviaapp.domain.HighscoreRepository
 import com.example.triviaapp.domain.Question
 import com.example.triviaapp.domain.QuestionRepository
 import com.example.triviaapp.domain.QuestionType
 import com.example.triviaapp.domain.Settings
 import com.example.triviaapp.domain.SettingsRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class QuestionViewModel(
     private val questionRepository: QuestionRepository,
-    private val settingsRepository: SettingsRepository
+    settingsRepository: SettingsRepository,
+    private val highscoreRepository: HighscoreRepository
 ) : ViewModel() {
 
     val settings: StateFlow<Settings> = settingsRepository.getSettings()
@@ -43,8 +48,11 @@ class QuestionViewModel(
     private val _score = MutableStateFlow(0)
     val score = _score.asStateFlow()
 
-    private val _highScore = MutableStateFlow(0)
-    val highScore = _highScore.asStateFlow()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val currentHighscore: StateFlow<Int?> = settingsRepository.getSettings()
+        .flatMapLatest { settings ->
+            highscoreRepository.getHighscore(settings)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     private val questionQueue = ArrayDeque<Question>()
     private var isFetching = false
@@ -95,9 +103,6 @@ class QuestionViewModel(
         val correct = _currentQuestion.value.correctAnswer
         if (answer == correct) {
             _score.value += 1
-            if (_score.value > _highScore.value) {
-                _highScore.value = _score.value
-            }
             Log.d("QuestionViewModel", "Correct answer: $answer, Score is now ${_score.value}")
             getNextQuestion()
             return true
@@ -106,12 +111,26 @@ class QuestionViewModel(
                 "QuestionViewModel",
                 "Wrong answer: $answer (expected '$correct'). Game over with score ${_score.value}"
             )
+            viewModelScope.launch { saveHighscore(settings.value, _score.value) }
             return false
+        }
+    }
+
+    suspend fun saveHighscore(currentSettings: Settings, finalScore: Int) {
+        val existing = highscoreRepository.getHighscore(currentSettings).first()
+        if (existing == null || finalScore > existing) {
+            highscoreRepository.saveHighscore(currentSettings, finalScore)
         }
     }
 
     fun resetGame() {
         _score.value = 0
         getNextQuestion()
+    }
+
+    fun resetHighscores() {
+        viewModelScope.launch {
+            highscoreRepository.resetHighscores()
+        }
     }
 }

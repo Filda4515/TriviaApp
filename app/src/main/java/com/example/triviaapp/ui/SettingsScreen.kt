@@ -1,7 +1,10 @@
 package com.example.triviaapp.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -11,12 +14,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
@@ -50,6 +54,9 @@ fun SettingsScreen(
 ) {
     val settings by settingsViewModel.settings.collectAsState()
     val categories by settingsViewModel.categories.collectAsState()
+    val highscore by questionViewModel.currentHighscore.collectAsState()
+
+    var showConfirmReset by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -138,6 +145,62 @@ fun SettingsScreen(
         ) {
             Text("Start Quiz")
         }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 16.dp, end = 16.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(20.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .width(IntrinsicSize.Max),
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "Highscore: ${highscore ?: 0}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            Button(
+                onClick = { showConfirmReset = true },
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(16.dp)
+            ) {
+                Text("Reset Highscores")
+            }
+
+        }
+    }
+
+    if (showConfirmReset) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showConfirmReset = false },
+            title = { Text("Reset highscores?") },
+            text = { Text("This will delete ALL saved highscores for every settings. Are you sure?") },
+            confirmButton = {
+                Button(onClick = {
+                    questionViewModel.resetHighscores()
+                    showConfirmReset = false
+                }) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showConfirmReset = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 
@@ -205,7 +268,7 @@ fun CategoryDropdown(
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded}
+        onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
             modifier = Modifier

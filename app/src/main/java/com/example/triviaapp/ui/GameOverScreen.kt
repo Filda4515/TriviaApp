@@ -26,7 +26,7 @@ import androidx.navigation.NavController
 @Composable
 fun GameOverScreen(viewModel: QuestionViewModel, navController: NavController) {
     val score by viewModel.score.collectAsState()
-    val highScore by viewModel.highScore.collectAsState()
+    val highScore by viewModel.currentHighscore.collectAsState()
 
     Column(
         modifier = Modifier

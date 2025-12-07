@@ -24,20 +24,35 @@ import com.example.triviaapp.ui.SettingsViewModel
 import com.example.triviaapp.ui.SettingsViewModelFactory
 import com.example.triviaapp.ui.theme.TriviaAppTheme
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.room.Room
+import com.example.triviaapp.data.DefaultHighscoreRepository
+import com.example.triviaapp.data.local.AppDatabase
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             TriviaAppTheme {
                 val questionRepository = DefaultQuestionRepository()
                 val settingsRepository = DefaultSettingsRepository(this)
                 val categoryRepository = DefaultCategoryRepository()
 
+                val db = Room.databaseBuilder(
+                    applicationContext,
+                    AppDatabase::class.java,
+                    "trivia-app-db"
+                ).build()
+                val highscoreRepository = DefaultHighscoreRepository(db.highscoreDao())
+
                 val questionViewModel: QuestionViewModel = viewModel(
-                    factory = QuestionViewModelFactory(questionRepository, settingsRepository)
+                    factory = QuestionViewModelFactory(
+                        questionRepository,
+                        settingsRepository,
+                        highscoreRepository
+                    )
                 )
 
                 val settingsViewModel: SettingsViewModel = viewModel(
