@@ -82,7 +82,11 @@ private fun Navigation(questionViewModel: QuestionViewModel, settingsViewModel: 
             QuestionScreen(viewModel = questionViewModel, navController = navController)
         }
         composable("gameover") {
-            GameOverScreen(viewModel = questionViewModel, navController = navController)
+            GameOverScreen(
+                questionViewModel = questionViewModel,
+                settingsViewModel = settingsViewModel,
+                navController = navController
+            )
         }
     }
 }

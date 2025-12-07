@@ -24,9 +24,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @Composable
-fun GameOverScreen(viewModel: QuestionViewModel, navController: NavController) {
-    val score by viewModel.score.collectAsState()
-    val highScore by viewModel.currentHighscore.collectAsState()
+fun GameOverScreen(
+    questionViewModel: QuestionViewModel,
+    settingsViewModel: SettingsViewModel,
+    navController: NavController
+) {
+    val score by questionViewModel.score.collectAsState()
+    val highScore by questionViewModel.currentHighscore.collectAsState()
+    val settings by settingsViewModel.settings.collectAsState()
 
     Column(
         modifier = Modifier
@@ -70,7 +75,8 @@ fun GameOverScreen(viewModel: QuestionViewModel, navController: NavController) {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(onClick = {
-                viewModel.resetGame()
+                questionViewModel.resetGame()
+                questionViewModel.getNextQuestion(settings)
                 navController.navigate("quiz") {
                     popUpTo("gameover") { inclusive = true }
                 }
