@@ -87,7 +87,6 @@ fun QuestionScreen(viewModel: QuestionViewModel, navController: NavController) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 16.dp, end = 16.dp)
                     .background(
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(20.dp)

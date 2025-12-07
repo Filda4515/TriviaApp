@@ -125,7 +125,6 @@ class QuestionViewModel(
 
     fun resetGame() {
         _score.value = 0
-        getNextQuestion()
     }
 
     fun resetHighscores() {

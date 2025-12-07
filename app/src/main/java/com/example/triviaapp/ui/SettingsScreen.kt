@@ -148,6 +148,7 @@ fun SettingsScreen(
 
         Button(
             onClick = {
+                questionViewModel.resetGame()
                 questionViewModel.getNextQuestion(settings)
                 navController.navigate("quiz") {
                     popUpTo("settings") { inclusive = true }
