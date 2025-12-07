@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.triviaapp.data.DefaultCategoryRepository
 import com.example.triviaapp.data.DefaultQuestionRepository
 import com.example.triviaapp.data.DefaultSettingsRepository
 import com.example.triviaapp.ui.GameOverScreen
@@ -31,13 +32,14 @@ class MainActivity : ComponentActivity() {
             TriviaAppTheme {
                 val questionRepository = DefaultQuestionRepository()
                 val settingsRepository = DefaultSettingsRepository(this)
+                val categoryRepository = DefaultCategoryRepository()
 
                 val questionViewModel: QuestionViewModel = viewModel(
                     factory = QuestionViewModelFactory(questionRepository, settingsRepository)
                 )
 
                 val settingsViewModel: SettingsViewModel = viewModel(
-                    factory = SettingsViewModelFactory(settingsRepository)
+                    factory = SettingsViewModelFactory(settingsRepository, categoryRepository)
                 )
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

@@ -121,6 +121,19 @@ fun QuestionScreen(viewModel: QuestionViewModel, navController: NavController) {
                     text = "Type: ${settings.questionType.label()}",
                     style = MaterialTheme.typography.bodyMedium
                 )
+
+                HorizontalDivider(
+                    modifier = Modifier
+                        .padding(vertical = 2.dp)
+                        .fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                )
+
+                Text(
+                    text = "Category: ${settings.category.name}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.triviaapp.data.remote
 
 import android.util.Log
+import com.example.triviaapp.domain.Category
 import com.example.triviaapp.domain.Difficulty
 import com.example.triviaapp.domain.QuestionType
 import com.example.triviaapp.domain.Settings
@@ -25,7 +26,7 @@ class QuestionRemoteDataSource {
             val response = withContext(Dispatchers.IO) {
                 URL(url).readText()
             }
-            val dto = json.decodeFromString<TokenResponseDto>(response)
+            val dto = json.decodeFromString<TokenApiDto>(response)
             val newToken = dto.token ?: throw IllegalStateException("No token in response")
             token = newToken
             Log.d("API", "Got new token: $newToken")
@@ -42,7 +43,7 @@ class QuestionRemoteDataSource {
             val resp = withContext(Dispatchers.IO) {
                 URL(resetUrl).readText()
             }
-            val dto = json.decodeFromString<TokenResponseDto>(resp)
+            val dto = json.decodeFromString<TokenApiDto>(resp)
             Log.d("API", "Reset token response: ${dto.responseCode} ${dto.responseMessage}")
         } catch (e: Exception) {
             Log.e("API", "Failed to reset token: ${e.message}")
@@ -50,8 +51,8 @@ class QuestionRemoteDataSource {
         }
     }
 
-    suspend fun getQuestions(settings: Settings, amount: Int): List<QuestionApiDto> {
-        return withContext(Dispatchers.IO) {
+    suspend fun getQuestions(settings: Settings, amount: Int): List<QuestionApiDto> =
+        withContext(Dispatchers.IO) {
             var connection: HttpURLConnection? = null
             val maxAttempts = 2
 
@@ -61,7 +62,8 @@ class QuestionRemoteDataSource {
 
                     val url = StringBuilder("https://opentdb.com/api.php?")
                     url.append("amount=$amount")
-                    url.append("&category=15")
+                    if (settings.category != Category.DEFAULT)
+                        url.append("&category=${settings.category.id}")
                     if (settings.difficulty != Difficulty.ANY)
                         url.append("&difficulty=${settings.difficulty.apiParam()}")
                     if (settings.questionType != QuestionType.ANY)
@@ -115,5 +117,4 @@ class QuestionRemoteDataSource {
 
             throw IllegalStateException("Failed to get questions after $maxAttempts attempts")
         }
-    }
 }

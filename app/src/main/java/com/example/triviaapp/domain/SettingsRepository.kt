@@ -7,4 +7,5 @@ interface SettingsRepository {
 
     suspend fun setDifficulty(difficulty: Difficulty)
     suspend fun setType(type: QuestionType)
+    suspend fun setCategory(category: Category)
 }
